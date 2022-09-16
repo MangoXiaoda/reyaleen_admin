@@ -589,37 +589,9 @@ return new class extends Migration
             $table->string('is_expiration_dated_product')
                 ->nullable();
 
-            $table->string('apparel_size')
-                ->nullable();
-
-            $table->string('item_form')
-                ->nullable();
-
-            $table->string('net_content_length_unit_of_measure')
-                ->nullable();
-
-            $table->string('net_content_count_unit_of_measure')
-                ->nullable();
-
-            $table->string('net_content_volume_unit_of_measure')
-                ->nullable();
-
-            $table->string('net_content_count')
-                ->nullable();
-
-            $table->string('net_content_area')
-                ->nullable();
-
-            $table->string('net_content_weight')
-                ->nullable();
-
-            $table->string('item_sku')
-                ->nullable();
-
-            $table->string('item_sku')
-                ->nullable();
-
+            $table->softDeletes()->comment('删除时间:有值表示已删除');
             $table->timestamps();
+            $table->comment('产品表');
         });
     }
 

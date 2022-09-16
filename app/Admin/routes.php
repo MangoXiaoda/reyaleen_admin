@@ -14,6 +14,6 @@ Route::group([
 
     $router->get('/', 'HomeController@index');
 
-    $router->resource('product/list', 'Product\ProductController');
+    $router->resource('adults_product/list', 'Product\AdultsProductController');
 
 });
