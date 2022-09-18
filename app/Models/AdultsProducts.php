@@ -17,4 +17,12 @@ class AdultsProducts extends Model
         'deleted_at'
     ];
 
+    /**
+     * 访问器 拼接资源全地址
+     */
+    public function getMainImageUrlAttribute()
+    {
+        return fileUrlToWebUrl($this->attributes['main_image_url']);
+    }
+
 }

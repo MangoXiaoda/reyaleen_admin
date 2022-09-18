@@ -94,7 +94,7 @@ return new class extends Migration
             $table->string('recommended_browse_nodes')
                 ->nullable();
 
-            $table->string('product_description')
+            $table->text('product_description')
                 ->nullable();
 
             $table->string('part_number')
