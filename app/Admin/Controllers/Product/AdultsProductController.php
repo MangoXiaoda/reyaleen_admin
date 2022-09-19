@@ -2,11 +2,11 @@
 
 namespace App\Admin\Controllers\Product;
 
+use App\Admin\Extensions\ExcelExpoter;
 use App\Models\AdultsProducts;
 use Dcat\Admin\Form;
 use Dcat\Admin\Grid;
 use Dcat\Admin\Http\Controllers\AdminController;
-use function Illuminate\Events\queueable;
 
 class AdultsProductController extends AdminController
 {
@@ -25,6 +25,19 @@ class AdultsProductController extends AdminController
             // 第一列显示 id字段，并将这一列设置为可排序列
             $grid->column('id', 'ID')->sortable();
 
+            $grid->column('d_type', '主体')->display(function () {
+                switch ($this->d_type) {
+                    case 1:
+                        $text = '父体';
+                        break;
+                    case 2:
+                        $text = '子体';
+                        break;
+                }
+
+                return $text;
+            });
+
             $grid->column('main_image_url', '图片')->image('http://xxx.com', 200,200);
 
             $grid->column('item_name', '标题')->limit(40);
@@ -32,6 +45,8 @@ class AdultsProductController extends AdminController
             $grid->column('standard_price', '价格');
 
             $grid->column('updated_at');
+
+            $grid->export(new ExcelExpoter());
         });
     }
 
@@ -44,6 +59,8 @@ class AdultsProductController extends AdminController
         return Form::make(new AdultsProducts(), function (Form $form) {
 
             $form->display('id', 'ID');
+
+            $form->hidden('d_type')->value(2);
 
             $form->text('item_sku', 'sku');
 
@@ -125,8 +142,6 @@ class AdultsProductController extends AdminController
 
             $form->hidden('recommended_browse_nodes')->value('2132593051');
 
-            $form->hidden('update_delete')->value('Update');
-
             $form->hidden('manufacturer')->value('Reyaleen');
 
             $form->hidden('website_shipping_weight')->value('1');
@@ -181,6 +196,33 @@ class AdultsProductController extends AdminController
 
                 $form->color_map = $form->color_name;
                 $form->product_description = $form->bullet_point1.$form->bullet_point2.$form->bullet_point3.$form->bullet_point4.$form->bullet_point5;
+
+                $parent_data = [
+                    'feed_product_type' => $form->feed_product_type,
+                    'item_sku' => $form->item_sku,
+                    'brand_name' => $form->brand_name,
+                    'item_name' => $form->item_name,
+                    'external_product_id_type' => $form->external_product_id_type,
+                    'parent_child' => 'parent',
+                    'variation_theme' => $form->variation_theme,
+                    'update_delete' => $form->update_delete,
+                    'recommended_browse_nodes' => $form->recommended_browse_nodes,
+                    'product_description' => $form->product_description,
+                    'part_number' => $form->item_sku,
+                    'manufacturer' => $form->brand_name,
+                    'bullet_point1' => $form->bullet_point1,
+                    'bullet_point2' => $form->bullet_point2,
+                    'bullet_point3' => $form->bullet_point3,
+                    'bullet_point4' => $form->bullet_point4,
+                    'bullet_point5' => $form->bullet_point5,
+                    'generic_keywords1' => $form->item_name,
+                    'country_of_origin' => $form->country_of_origin,
+                    'unit_count' => $form->unit_count,
+                    'unit_count_type' => $form->unit_count_type,
+                    'is_adult_product' => $form->is_adult_product,
+                ];
+
+                AdultsProducts::query()->create($parent_data);
             });
 
             //在表单提交前调用，在此事件中可以修改、删除用户提交的数据或者中断提交操作

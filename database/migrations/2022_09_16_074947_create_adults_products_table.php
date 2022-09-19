@@ -16,6 +16,10 @@ return new class extends Migration
         Schema::create('adults_products', function (Blueprint $table) {
             $table->id();
 
+            $table->tinyInteger('d_type')
+                ->default(1)
+                ->comment('数据类型：1父，2子');
+
             $table->string('feed_product_type')
                 ->nullable();
 
