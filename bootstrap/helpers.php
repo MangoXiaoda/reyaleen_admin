@@ -28,7 +28,7 @@ function fileUrlToWebUrl ($url) {
         if ($app_env === 'local')
             return config('app.url') . '/storage/' . $url;
         // 测试环境 env 参数
-        if ($app_env === 'lj')
+        if ($app_env === 'www')
             return config('app.url') . '/storage/' . $url;
         return '' . $url;
     }
@@ -39,7 +39,7 @@ function fileUrlToWebUrl ($url) {
         if ($app_env === 'local')
             return config('app.url') . '/' . $url;
         // 测试环境 env 参数
-        if ($app_env === 'lj')
+        if ($app_env === 'www')
             return config('app.url') . '/' . $url;
         return '' . $url;
     }
