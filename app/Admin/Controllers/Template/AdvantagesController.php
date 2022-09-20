@@ -25,7 +25,15 @@ class AdvantagesController extends AdminController
     {
         return Form::make(new AdvantagesTemplate(), function (Form $form) {
 
+            $form->display('id');
 
+            $options_url = config('app.url') . '/api/advantages_template/get_list';
+            $form->select('templates_category_id', '模板分类')
+                ->options($options_url)->saving(function ($value){
+                    if (!$value)
+                        return 0;
+                    return $value;
+                });
 
         });
     }

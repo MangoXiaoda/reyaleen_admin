@@ -33,6 +33,9 @@ class AdultsProductController extends AdminController
                     case 2:
                         $text = '子体';
                         break;
+                    default:
+                        $text = '未知';
+                        break;
                 }
 
                 return $text;
