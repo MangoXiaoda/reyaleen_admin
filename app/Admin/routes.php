@@ -14,6 +14,11 @@ Route::group([
 
     $router->get('/', 'HomeController@index');
 
+    // 模板
+    $router->resource('template_category/list', 'Template\AdvantagesCategoryController');
+    $router->resource('template/list', 'Template\AdvantagesController');
+
+    // 产品
     $router->resource('adults_product/list', 'Product\AdultsProductController');
 
 });
