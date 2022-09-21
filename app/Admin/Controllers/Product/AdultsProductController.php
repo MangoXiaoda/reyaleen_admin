@@ -4,6 +4,7 @@ namespace App\Admin\Controllers\Product;
 
 use App\Admin\Extensions\ExcelExpoter;
 use App\Models\AdultsProducts;
+use App\Models\AdvantagesTemplate;
 use Dcat\Admin\Form;
 use Dcat\Admin\Grid;
 use Dcat\Admin\Http\Controllers\AdminController;
@@ -123,15 +124,37 @@ class AdultsProductController extends AdminController
                     return $img_arr;
                 });
 
-            $form->text('bullet_point1', '卖点一');
+            $options_radio = [
+                1 => '模板填充',
+                2 => '手动填写'
+            ];
+            $form->radio('m_type', '方式')
+                ->when(1, function (Form $form) {
 
-            $form->text('bullet_point2', '卖点二');
+                    $options_url = config('app.url') . '/api/advantages_template/get_list';
+                    $form->select('templates_category_id', '五点模板')
+                        ->options($options_url)->saving(function ($value){
+                            if (!$value)
+                                return 0;
+                            return $value;
+                        });
 
-            $form->text('bullet_point3', '卖点三');
+                })
+                ->when(2, function (Form $form) {
 
-            $form->text('bullet_point4', '卖点四');
+                    $form->text('bullet_point1', '卖点一');
 
-            $form->text('bullet_point5', '卖点五');
+                    $form->text('bullet_point2', '卖点二');
+
+                    $form->text('bullet_point3', '卖点三');
+
+                    $form->text('bullet_point4', '卖点四');
+
+                    $form->text('bullet_point5', '卖点五');
+
+                })
+                ->options($options_radio)
+                ->default(1);
 
             $form->hidden('feed_product_type')->value('sexualstimulationdevice');
 
@@ -184,6 +207,8 @@ class AdultsProductController extends AdminController
             $form->saving(function (Form $form) {
                 $images = request('images');
                 $img_arr = explode(',', $images);
+                $m_type = request('m_type');
+                $templates_category_id = request('templates_category_id');
 
                 // 赋值相关产品图片
                 $form->main_image_url = $img_arr[0] ?? '';
@@ -200,6 +225,24 @@ class AdultsProductController extends AdminController
                 $form->color_map = $form->color_name;
                 $form->product_description = $form->bullet_point1.$form->bullet_point2.$form->bullet_point3.$form->bullet_point4.$form->bullet_point5;
 
+                // 根据方式，确定五点填充
+                if ($m_type == 1) {
+                    $m_data = AdvantagesTemplate::query()
+                        ->where('templates_category_id', $templates_category_id)
+                        ->get()
+                        ->toArray();
+
+                    // 根据选择模板分类，赋值五点内容
+                    foreach ($m_data as $key => $value) {
+                        $num = $key + 1;
+                        $bullet_name = "bullet_point" . $num;
+                        $form->$bullet_name = $value['content'] ?? '';
+                    }
+                } else {
+                    $form->m_type = 2;
+                    $form->templates_category_id = 0;
+                }
+
                 $parent_data = [
                     'feed_product_type' => $form->feed_product_type,
                     'item_sku' => $form->item_sku,
@@ -213,6 +256,8 @@ class AdultsProductController extends AdminController
                     'product_description' => $form->product_description,
                     'part_number' => $form->item_sku,
                     'manufacturer' => $form->brand_name,
+                    'm_type' => $form->m_type,
+                    'templates_category_id' => $form->templates_category_id,
                     'bullet_point1' => $form->bullet_point1,
                     'bullet_point2' => $form->bullet_point2,
                     'bullet_point3' => $form->bullet_point3,
